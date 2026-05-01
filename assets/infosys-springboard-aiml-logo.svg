@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" role="img" aria-labelledby="title desc">
-  <title id="title">Infosys Springboard AIML Internship Showcase</title>
+  <title id="title">Autonomous Learning Agent</title>
   <desc id="desc">Classic badge style logo for the autonomous learning agent project.</desc>
   <defs>
     <linearGradient id="panel" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -13,8 +13,8 @@
   <path d="M77 109c14-22 26-33 36-33 13 0 22 12 22 26 0 27-28 40-28 58" fill="none" stroke="#6c5334" stroke-linecap="round" stroke-linejoin="round" stroke-width="7" />
   <path d="M90 123h30" stroke="#b6842b" stroke-linecap="round" stroke-width="7" />
   <path d="M84 138h42" stroke="#b6842b" stroke-linecap="round" stroke-width="7" />
-  <text x="176" y="84" fill="#6f5835" font-family="Georgia, 'Times New Roman', serif" font-size="20" letter-spacing="2">INFOSYS SPRINGBOARD AIML</text>
+  <text x="176" y="86" fill="#6f5835" font-family="Georgia, 'Times New Roman', serif" font-size="18" letter-spacing="2">DESIGNING AN</text>
   <text x="176" y="124" fill="#2f2a24" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700">Autonomous Learning Agent</text>
-  <text x="176" y="156" fill="#5a5043" font-family="Georgia, 'Times New Roman', serif" font-size="18">Checkpoint Verification • Feynman Pedagogy • Group 2</text>
-  <text x="176" y="184" fill="#7a674c" font-family="Georgia, 'Times New Roman', serif" font-size="14" letter-spacing="1.5">INTERNSHIP SHOWCASE</text>
+  <text x="176" y="156" fill="#5a5043" font-family="Georgia, 'Times New Roman', serif" font-size="18">Checkpoint Verification • Feynman Pedagogy</text>
+  <text x="176" y="184" fill="#7a674c" font-family="Georgia, 'Times New Roman', serif" font-size="14" letter-spacing="1.5">RESEARCH • LEARN • VERIFY</text>
 </svg>
