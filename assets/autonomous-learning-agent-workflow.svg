@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 980" role="img" aria-labelledby="title desc">
+  <title id="title">Autonomous Learning Agent Workflow</title>
+  <desc id="desc">Workflow from research request through checkpoint learning and remediation.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6f5a3b" />
+    </marker>
+    <style>
+      .bg { fill: #fcfaf4; }
+      .panel { fill: #f7f1e3; stroke: #8a6d3b; stroke-width: 2; rx: 20; ry: 20; }
+      .soft { fill: #efe3c2; stroke: #7a6040; stroke-width: 2; rx: 18; ry: 18; }
+      .decision { fill: #f7e7b6; stroke: #8a6d3b; stroke-width: 2; }
+      .success { fill: #dfead2; stroke: #57734c; stroke-width: 2; rx: 18; ry: 18; }
+      .title { font: 700 32px Georgia, 'Times New Roman', serif; fill: #2f2a24; }
+      .subtitle { font: 18px Georgia, 'Times New Roman', serif; fill: #6b5b48; }
+      .label { font: 700 18px Georgia, 'Times New Roman', serif; fill: #2f2a24; }
+      .small { font: 15px Georgia, 'Times New Roman', serif; fill: #4e453a; }
+      .line { stroke: #6f5a3b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1280" height="980" />
+  <text x="640" y="58" text-anchor="middle" class="title">Autonomous Learning Agent Workflow</text>
+  <text x="640" y="88" text-anchor="middle" class="subtitle">Infosys Springboard AIML Internship • Research, Verification, and Feynman Remediation Loop</text>
+
+  <rect class="panel" x="70" y="130" width="260" height="86" />
+  <text x="200" y="168" text-anchor="middle" class="label">1. User Request</text>
+  <text x="200" y="194" text-anchor="middle" class="small">Research goal or learning intent</text>
+
+  <rect class="soft" x="70" y="280" width="260" height="86" />
+  <text x="200" y="318" text-anchor="middle" class="label">2. Clarify Scope</text>
+  <text x="200" y="344" text-anchor="middle" class="small">Ask follow-up questions if needed</text>
+
+  <rect class="soft" x="70" y="430" width="260" height="86" />
+  <text x="200" y="468" text-anchor="middle" class="label">3. Research Brief</text>
+  <text x="200" y="494" text-anchor="middle" class="small">Convert conversation into structure</text>
+
+  <rect class="soft" x="430" y="220" width="300" height="100" />
+  <text x="580" y="260" text-anchor="middle" class="label">4. Supervisor Orchestration</text>
+  <text x="580" y="286" text-anchor="middle" class="small">Delegate tasks to research workers</text>
+
+  <rect class="soft" x="430" y="390" width="300" height="100" />
+  <text x="580" y="430" text-anchor="middle" class="label">5. Research Execution</text>
+  <text x="580" y="456" text-anchor="middle" class="small">Gather notes, evidence, and sources</text>
+
+  <rect class="panel" x="430" y="560" width="300" height="100" />
+  <text x="580" y="600" text-anchor="middle" class="label">6. Final Report</text>
+  <text x="580" y="626" text-anchor="middle" class="small">Synthesize findings into an answer</text>
+
+  <rect class="soft" x="870" y="160" width="320" height="96" />
+  <text x="1030" y="200" text-anchor="middle" class="label">7. Generate Checkpoints</text>
+  <text x="1030" y="226" text-anchor="middle" class="small">Break the report into learning milestones</text>
+
+  <rect class="soft" x="870" y="310" width="320" height="96" />
+  <text x="1030" y="350" text-anchor="middle" class="label">8. Create Study Material</text>
+  <text x="1030" y="376" text-anchor="middle" class="small">Prepare explanations and quiz questions</text>
+
+  <rect class="soft" x="870" y="460" width="320" height="96" />
+  <text x="1030" y="500" text-anchor="middle" class="label">9. Administer Quiz</text>
+  <text x="1030" y="526" text-anchor="middle" class="small">Collect learner answers per checkpoint</text>
+
+  <polygon class="decision" points="1030,610 1160,690 1030,770 900,690" />
+  <text x="1030" y="684" text-anchor="middle" class="label">10. Passed?</text>
+  <text x="1030" y="708" text-anchor="middle" class="small">Score >= threshold</text>
+
+  <rect class="success" x="840" y="830" width="260" height="92" />
+  <text x="970" y="870" text-anchor="middle" class="label">11. Progress Forward</text>
+  <text x="970" y="896" text-anchor="middle" class="small">Move to next checkpoint or finish</text>
+
+  <rect class="soft" x="1110" y="830" width="120" height="92" />
+  <text x="1170" y="870" text-anchor="middle" class="label">12. Retry</text>
+  <text x="1170" y="896" text-anchor="middle" class="small">Revisit content</text>
+
+  <rect class="soft" x="870" y="40" width="320" height="76" />
+  <text x="1030" y="72" text-anchor="middle" class="label">Feynman Remediation</text>
+  <text x="1030" y="96" text-anchor="middle" class="small">Simplify weak concepts in plain language</text>
+
+  <path class="line" d="M200 216 L200 280" />
+  <path class="line" d="M200 366 L200 430" />
+  <path class="line" d="M330 473 C375 473, 390 270, 430 270" />
+  <path class="line" d="M580 320 L580 390" />
+  <path class="line" d="M580 490 L580 560" />
+  <path class="line" d="M730 610 C810 610, 810 208, 870 208" />
+  <path class="line" d="M1030 256 L1030 310" />
+  <path class="line" d="M1030 406 L1030 460" />
+  <path class="line" d="M1030 556 L1030 610" />
+  <path class="line" d="M970 770 L970 830" />
+  <path class="line" d="M1090 770 C1125 790, 1160 805, 1170 830" />
+  <path class="line" d="M1170 830 C1215 760, 1225 160, 1030 116" />
+  <path class="line" d="M1030 116 L1030 160" />
+</svg>
