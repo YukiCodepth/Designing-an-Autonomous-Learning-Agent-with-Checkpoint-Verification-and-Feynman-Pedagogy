@@ -1,20 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 240" role="img" aria-labelledby="title desc">
   <title id="title">Autonomous Learning Agent</title>
-  <desc id="desc">Classic badge style logo for the autonomous learning agent project.</desc>
+  <desc id="desc">Modern industry-style logo for the autonomous learning agent project.</desc>
   <defs>
-    <linearGradient id="panel" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f8f2df" />
-      <stop offset="100%" stop-color="#efe1b9" />
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="55%" stop-color="#111c35" />
+      <stop offset="100%" stop-color="#1e293b" />
     </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <linearGradient id="accentSoft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#67e8f9" />
+      <stop offset="100%" stop-color="#60a5fa" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
-  <rect width="640" height="220" rx="28" fill="#fcfaf4" />
-  <rect x="18" y="18" width="604" height="184" rx="20" fill="url(#panel)" stroke="#8b6a3d" stroke-width="3" />
-  <circle cx="104" cy="110" r="56" fill="#fdf8ec" stroke="#8b6a3d" stroke-width="4" />
-  <path d="M77 109c14-22 26-33 36-33 13 0 22 12 22 26 0 27-28 40-28 58" fill="none" stroke="#6c5334" stroke-linecap="round" stroke-linejoin="round" stroke-width="7" />
-  <path d="M90 123h30" stroke="#b6842b" stroke-linecap="round" stroke-width="7" />
-  <path d="M84 138h42" stroke="#b6842b" stroke-linecap="round" stroke-width="7" />
-  <text x="176" y="86" fill="#6f5835" font-family="Georgia, 'Times New Roman', serif" font-size="18" letter-spacing="2">DESIGNING AN</text>
-  <text x="176" y="124" fill="#2f2a24" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-weight="700">Autonomous Learning Agent</text>
-  <text x="176" y="156" fill="#5a5043" font-family="Georgia, 'Times New Roman', serif" font-size="18">Checkpoint Verification • Feynman Pedagogy</text>
-  <text x="176" y="184" fill="#7a674c" font-family="Georgia, 'Times New Roman', serif" font-size="14" letter-spacing="1.5">RESEARCH • LEARN • VERIFY</text>
+
+  <rect width="760" height="240" rx="32" fill="#edf2f7" />
+  <rect x="18" y="18" width="724" height="204" rx="28" fill="url(#bg)" />
+  <rect x="18" y="18" width="724" height="204" rx="28" fill="none" stroke="#334155" stroke-width="2" />
+
+  <path d="M82 54H306" stroke="#1e293b" stroke-width="1" opacity="0.22" />
+  <path d="M82 186H306" stroke="#1e293b" stroke-width="1" opacity="0.18" />
+  <path d="M478 52H692" stroke="#38bdf8" stroke-width="1" opacity="0.12" />
+  <path d="M478 188H692" stroke="#38bdf8" stroke-width="1" opacity="0.12" />
+
+  <rect x="54" y="48" width="140" height="140" rx="34" fill="#0b1222" stroke="#1e3a5f" stroke-width="2" />
+  <rect x="66" y="60" width="116" height="116" rx="28" fill="#111827" stroke="#22324d" stroke-width="1.5" />
+
+  <path d="M98 138L122 114L144 126L170 92" fill="none" stroke="url(#accent)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  <path d="M123 114L123 153L171 153" fill="none" stroke="#e2f3ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+  <circle cx="98" cy="138" r="8" fill="#22d3ee" />
+  <circle cx="122" cy="114" r="8" fill="#38bdf8" />
+  <circle cx="144" cy="126" r="8" fill="#67e8f9" />
+  <circle cx="170" cy="92" r="8" fill="#60a5fa" />
+  <circle cx="171" cy="153" r="8" fill="#93c5fd" />
+  <circle cx="123" cy="153" r="8" fill="#bae6fd" />
+
+  <text x="232" y="84" fill="#7dd3fc" font-family="'Avenir Next', 'Montserrat', 'Segoe UI', sans-serif" font-size="16" font-weight="700" letter-spacing="2.8">AI RESEARCH + LEARNING SYSTEM</text>
+  <text x="232" y="126" fill="#f8fafc" font-family="'Avenir Next', 'Montserrat', 'Segoe UI', sans-serif" font-size="38" font-weight="800">Autonomous Learning Agent</text>
+  <text x="232" y="156" fill="#cbd5e1" font-family="'Avenir Next', 'Montserrat', 'Segoe UI', sans-serif" font-size="18" font-weight="500">Checkpoint Verification • Feynman Pedagogy</text>
+
+  <rect x="232" y="176" width="198" height="28" rx="14" fill="#0b1222" stroke="#1d4ed8" stroke-width="1.2" />
+  <circle cx="250" cy="190" r="5" fill="#22d3ee" />
+  <text x="266" y="195" fill="#dbeafe" font-family="'Avenir Next', 'Montserrat', 'Segoe UI', sans-serif" font-size="13" font-weight="700" letter-spacing="1.4">RESEARCH • LEARN • VERIFY</text>
+
+  <path d="M644 72c18 0 34 15 34 34s-16 34-34 34" fill="none" stroke="url(#accentSoft)" stroke-width="3" opacity="0.55" />
+  <path d="M616 92c10 0 18 8 18 18s-8 18-18 18" fill="none" stroke="#67e8f9" stroke-width="3" opacity="0.55" />
+  <circle cx="690" cy="106" r="4" fill="#38bdf8" />
+  <circle cx="644" cy="72" r="4" fill="#60a5fa" />
+  <circle cx="644" cy="140" r="4" fill="#22d3ee" />
 </svg>
