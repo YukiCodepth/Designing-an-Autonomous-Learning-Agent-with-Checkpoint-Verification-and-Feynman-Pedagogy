@@ -43,8 +43,19 @@ def get_current_dir() -> Path:
 
 # ===== CONFIGURATION =====
 
-summarization_model = init_chat_model("google_genai:models/gemini-flash-latest")
-tavily_client = TavilyClient()
+summarization_model = init_chat_model(
+    "google_genai:models/gemini-flash-latest",
+    max_retries=0,
+)
+tavily_client: TavilyClient | None = None
+
+
+def get_tavily_client() -> TavilyClient:
+    """Create the Tavily client lazily so imports do not require the API key."""
+    global tavily_client
+    if tavily_client is None:
+        tavily_client = TavilyClient()
+    return tavily_client
 
 # ===== SEARCH FUNCTIONS =====
 
@@ -68,8 +79,9 @@ def tavily_search_multiple(
 
     # Execute searches sequentially. Note: yon can use AsyncTavilyClient to parallelize this step.
     search_docs = []
+    client = get_tavily_client()
     for query in search_queries:
-        result = tavily_client.search(
+        result = client.search(
             query,
             max_results=max_results,
             include_raw_content=include_raw_content,

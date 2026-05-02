@@ -1,97 +1,176 @@
-# ============================================
-# Deep Research From Scratch - Docker Compose
-# ============================================
-
 services:
-  deep-research:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: deep-research-postgres
+    environment:
+      POSTGRES_DB: copilot
+      POSTGRES_USER: copilot
+      POSTGRES_PASSWORD: copilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U copilot -d copilot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: deep-research-agent
-    
-    # Port mapping
-    ports:
-      - "8000:8000"
-    
-    # Environment variables from .env file
+    container_name: deep-research-api
+    depends_on:
+      postgres:
+        condition: service_healthy
     env_file:
       - .env
-    
-    # Additional environment variables (override or add as needed)
     environment:
-      - PYTHONUNBUFFERED=1
-      - PORT=8000
-    
-    # Volume mounts
+      DATABASE_URL: postgresql+psycopg://copilot:copilot@postgres:5432/copilot
+      PYTHONUNBUFFERED: "1"
+      APP_BASE_URL: http://127.0.0.1:3000
+      ARTIFACTS_DIR: /app/artifacts
+      UPLOADS_DIR: /app/uploads
+    command: >
+      sh -c "uv run alembic upgrade head &&
+      uv run uvicorn deep_research_from_scratch.product.api:app
+      --host 0.0.0.0 --port 8001"
+    ports:
+      - "8001:8001"
     volumes:
-      # Persist generated reports
       - research_reports:/app/src/deep_research_from_scratch/files
-    
-    # Resource limits (adjust based on your system)
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-        reservations:
-          memory: 1G
-    
-    # Restart policy
+      - product_artifacts:/app/artifacts
+      - product_uploads:/app/uploads
     restart: unless-stopped
-    
-    # Health check
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8001/ready"]
+      interval: 20s
+      timeout: 10s
+      retries: 6
+      start_period: 90s
+
+  langgraph:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: deep-research-langgraph
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://copilot:copilot@postgres:5432/copilot
+      PYTHONUNBUFFERED: "1"
+      ARTIFACTS_DIR: /app/artifacts
+      UPLOADS_DIR: /app/uploads
+    command: ["uv", "run", "langgraph", "dev", "--host", "0.0.0.0", "--port", "8000", "--allow-blocking"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - research_reports:/app/src/deep_research_from_scratch/files
+      - product_artifacts:/app/artifacts
+      - product_uploads:/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/openapi.json"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 6
+      start_period: 90s
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: deep-research-worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://copilot:copilot@postgres:5432/copilot
+      PYTHONUNBUFFERED: "1"
+      ARTIFACTS_DIR: /app/artifacts
+      UPLOADS_DIR: /app/uploads
+    command: ["uv", "run", "python", "-m", "deep_research_from_scratch.product.worker"]
+    volumes:
+      - research_reports:/app/src/deep_research_from_scratch/files
+      - product_artifacts:/app/artifacts
+      - product_uploads:/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ps -ef | grep 'deep_research_from_scratch.product.worker' | grep -v grep >/dev/null"]
+      interval: 20s
+      timeout: 10s
+      retries: 6
       start_period: 30s
 
-  # ============================================
-  # Jupyter Notebook Service (Development Only)
-  # ============================================
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: deep-research-web
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_BASE_URL: http://api:8001
+      NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8001
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000"]
+      interval: 20s
+      timeout: 10s
+      retries: 6
+      start_period: 90s
+
   jupyter:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: deep-research-jupyter
-    
-    # Override command to run Jupyter
     command: >
-      jupyter notebook 
-      --ip=0.0.0.0 
-      --port=8888 
-      --no-browser 
-      --allow-root 
+      jupyter notebook
+      --ip=0.0.0.0
+      --port=8888
+      --no-browser
+      --allow-root
       --NotebookApp.token=''
       --NotebookApp.password=''
-    
     ports:
       - "8888:8888"
-    
     env_file:
       - .env
-    
     environment:
-      - PYTHONUNBUFFERED=1
-    
+      DATABASE_URL: postgresql+psycopg://copilot:copilot@postgres:5432/copilot
+      PYTHONUNBUFFERED: "1"
+      ARTIFACTS_DIR: /app/artifacts
+      UPLOADS_DIR: /app/uploads
     volumes:
-      # Mount notebooks for editing
       - ./notebooks:/app/notebooks
-      # Persist generated reports
       - research_reports:/app/src/deep_research_from_scratch/files
-    
-    # This service is for development only
+      - product_artifacts:/app/artifacts
+      - product_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
     profiles:
       - dev
-    
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-        reservations:
-          memory: 1G
 
-# Named volumes for data persistence
 volumes:
+  postgres_data:
+    driver: local
   research_reports:
+    driver: local
+  product_artifacts:
+    driver: local
+  product_uploads:
     driver: local

@@ -47,6 +47,9 @@ Desktop.ini
 # Logs
 *.log
 logs/
+copilot_v2.db
+artifacts/
+uploads/
 
 # Test and coverage
 .pytest_cache/
@@ -60,3 +63,6 @@ htmlcov/
 
 # Node modules (if any)
 node_modules/
+.next/
+frontend/.next/
+frontend/node_modules/

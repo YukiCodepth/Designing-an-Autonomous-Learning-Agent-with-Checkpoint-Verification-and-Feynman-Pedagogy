@@ -41,6 +41,7 @@ eggs/
 htmlcov/
 .tox/
 .nox/
+.mypy_cache
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
@@ -81,3 +82,9 @@ temp/
 Dockerfile*
 docker-compose*.yml
 .dockerignore
+
+# Product frontend and runtime artifacts
+frontend/node_modules
+frontend/.next
+artifacts
+uploads

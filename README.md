@@ -101,10 +101,117 @@ flowchart LR
 | Path | Purpose |
 | --- | --- |
 | `src/deep_research_from_scratch/` | Core LangGraph agents, prompts, state models, and learning workflows. |
+| `src/deep_research_from_scratch/product/` | Product backend, auth, data models, worker, knowledge ingestion, and exports. |
+| `frontend/` | Next.js workspace UI for dashboards, reports, learning sessions, invites, and analytics. |
+| `alembic/` | Database migration environment for the PostgreSQL + `pgvector` product schema. |
+| `docker/` | Supporting Docker assets such as PostgreSQL initialization scripts. |
 | `notebooks/` | Step-by-step tutorial notebooks that build the system incrementally. |
 | `langgraph.json` | LangGraph assistant registry and runtime configuration. |
-| `docker-compose.yml` | Containerized local run experience on port `8000`. |
-| `Dockerfile` | Reproducible environment for Docker-based usage. |
+| `docker-compose.yml` | Full self-hosted stack for PostgreSQL, API, LangGraph, worker, web UI, and optional Jupyter. |
+| `Dockerfile` | Reusable Python service image for API, LangGraph, worker, and notebooks. |
+
+## Full Product Platform
+
+The repo now includes a much more complete **research + learning copilot platform** in addition to the original LangGraph internship flows.
+
+### What the product layer now includes
+
+- 🔐 JWT auth with workspace membership and invite acceptance.
+- 🏢 Shared workspaces, projects, runs, reports, and collaboration comments.
+- 🧾 Source-grounded reports with report sections and source review decisions.
+- 🧠 A private project knowledge base with notes, URLs, uploaded documents, chunking, and vector-backed retrieval.
+- 📈 Workspace analytics for runs, reports, learning progress, source quality, and activity.
+- 🛠️ Background jobs for ingestion and exports through a dedicated worker.
+- 📦 Markdown/PDF report export plus learning-session and workspace summary exports.
+- 🌍 A Next.js UI scaffold for workspaces, project dashboards, reports, analytics, invites, and learning sessions.
+
+### Primary product services
+
+| Service | Default URL | Purpose |
+| --- | --- | --- |
+| Product API | `http://127.0.0.1:8001` | FastAPI backend for auth, workspaces, projects, knowledge, comments, jobs, and analytics. |
+| Web UI | `http://127.0.0.1:3000` | Next.js product dashboard. |
+| LangGraph | `http://127.0.0.1:8000` | Legacy/demo graph runtime and Studio access. |
+| PostgreSQL | `127.0.0.1:5432` | Product persistence with `pgvector`. |
+| Jupyter | `http://127.0.0.1:8888` | Optional development notebook environment. |
+
+## Product V2 Foundation
+
+The repository now also includes the first product-oriented foundation for a multi-user research and learning copilot:
+
+- `copilot_v2` unified graph in `langgraph.json`
+- FastAPI backend with auth, workspaces, projects, runs, reports, comments, learning sessions, and analytics
+- database-backed persistence instead of file-only learning handoff
+- a Next.js web app scaffold in `frontend/`
+- Alembic migrations for the PostgreSQL-backed product schema
+- a background worker for document ingestion and export jobs
+- a private knowledge base with notes, URLs, uploaded files, and retrieval support
+
+### Product Backend
+
+Run the product API separately from the LangGraph dev server:
+
+```bash
+uv sync --python 3.11
+uv run alembic upgrade head
+uv run uvicorn deep_research_from_scratch.product.api:app --host 127.0.0.1 --port 8001 --reload
+```
+
+Useful product endpoints:
+
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/accept-invite`
+- `GET /workspaces`
+- `POST /workspaces/{workspace_id}/invites`
+- `GET /workspaces/{workspace_id}/jobs`
+- `POST /projects/{project_id}/runs`
+- `POST /projects/{project_id}/knowledge/notes`
+- `POST /projects/{project_id}/knowledge/urls`
+- `POST /projects/{project_id}/knowledge/documents`
+- `POST /projects/{project_id}/knowledge/search`
+- `GET /reports/{report_id}`
+- `POST /reports/{report_id}/status`
+- `POST /reports/{report_id}/learn`
+- `POST /reports/{report_id}/exports/markdown`
+- `POST /reports/{report_id}/exports/pdf`
+- `POST /checkpoints/{checkpoint_id}/submit`
+- `GET /analytics/workspaces/{workspace_id}`
+
+### Product Worker
+
+Run the background worker to process ingestion and export jobs:
+
+```bash
+uv run alembic upgrade head
+uv run python -m deep_research_from_scratch.product.worker
+```
+
+### Product Frontend
+
+The web app scaffold lives in `frontend/` and is designed to sit on top of the new FastAPI service:
+
+```bash
+cd frontend
+npm install
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8001 npm run dev
+```
+
+Optional:
+
+- Set `NEXT_PUBLIC_DEMO_TOKEN` after registering through the backend if you want the dashboard pages to fetch live data immediately.
+- For containerized use, the frontend also respects `API_BASE_URL=http://api:8001` for server-side fetching inside Docker.
+
+### Product Frontend Routes
+
+- `/login`
+- `/workspaces`
+- `/workspaces/[workspaceId]`
+- `/workspaces/[workspaceId]/projects/[projectId]`
+- `/reports/[reportId]`
+- `/learning-sessions/[sessionId]`
+- `/analytics/[workspaceId]`
+- `/invites/[token]`
 
 ##  Quickstart 
 
@@ -156,9 +263,12 @@ docker compose up -d
 
 | Service | URL |
 |---------|-----|
+| **Product Web UI** | http://127.0.0.1:3000 |
+| **Product API** | http://127.0.0.1:8001 |
 | **LangGraph Studio** | https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:8000 |
-| **API Documentation** | http://127.0.0.1:8000/docs |
-| **API Root** | http://127.0.0.1:8000 |
+| **LangGraph API Docs** | http://127.0.0.1:8000/docs |
+| **Product API Docs** | http://127.0.0.1:8001/docs |
+| **Jupyter (optional)** | http://127.0.0.1:8888 |
 
 5. **View logs:**
 ```bash
@@ -170,7 +280,7 @@ docker compose logs -f
 docker compose down
 ```
 
-Do not run the Docker and local development servers at the same time because both use port `8000`.
+Do not run the Docker and local development servers at the same time because the stack already binds ports `3000`, `5432`, `8000`, and `8001`.
 
 #### Docker Commands Reference
 
@@ -183,6 +293,9 @@ docker compose build --no-cache
 
 # Start in detached mode
 docker compose up -d
+
+# Start with optional notebooks
+docker compose --profile dev up -d
 
 # View logs
 docker compose logs -f
@@ -202,6 +315,31 @@ docker compose down && docker compose build && docker compose up -d
 ### Option 2: Local Installation
 
 If you prefer to run without Docker, follow these steps:
+
+#### Product Stack (API + Worker + Web)
+
+```bash
+# from repo root
+uv sync --python 3.11
+uv run alembic upgrade head
+
+# terminal 1
+uv run uvicorn deep_research_from_scratch.product.api:app --host 127.0.0.1 --port 8001 --reload
+
+# terminal 2
+uv run python -m deep_research_from_scratch.product.worker
+
+# terminal 3
+cd frontend
+npm install
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8001 npm run dev
+```
+
+Then open:
+
+- Product UI: `http://127.0.0.1:3000`
+- Product API docs: `http://127.0.0.1:8001/docs`
+- LangGraph docs: `http://127.0.0.1:8000/docs`
 
 #### Prerequisites
 
