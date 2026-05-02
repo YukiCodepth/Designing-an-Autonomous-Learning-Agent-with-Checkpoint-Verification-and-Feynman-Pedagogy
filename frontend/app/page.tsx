@@ -1,70 +1,82 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+import { useAuth } from "../components/auth-provider";
 
 export default function HomePage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/workspaces");
+    }
+  }, [loading, router, user]);
+
+  if (loading) {
+    return <div className="panel empty">Loading the workspace app...</div>;
+  }
+
+  if (user) {
+    return <div className="panel empty">Opening your workspaces...</div>;
+  }
+
   return (
-    <div className="grid cols-2">
-      <section className="panel stack">
-        <div className="eyebrow">Research + Learning</div>
-        <h2 style={{ marginBottom: 0 }}>One workflow from question to mastery</h2>
-        <p className="muted">
-          This product layer turns the existing LangGraph demo into a collaborative
-          workspace where teams can run cited research, save reports, launch
-          learning sessions, track checkpoint performance, and build topic mastery.
+    <div className="page-stack">
+      <section className="hero-card">
+        <div className="eyebrow">Research to mastery</div>
+        <h2>Run the full product from the browser, not from Swagger.</h2>
+        <p className="muted hero-copy">
+          Sign in to create workspaces, launch research or learning runs, review
+          cited reports, submit checkpoints, manage knowledge, and track exports
+          and analytics in one place.
         </p>
         <div className="chip-row">
-          <span className="chip">Shared workspaces</span>
-          <span className="chip">Cited report viewer</span>
-          <span className="chip">Adaptive checkpoint sessions</span>
-          <span className="chip">Project runs + history</span>
+          <span className="chip">Real auth</span>
+          <span className="chip">Live workspace dashboards</span>
+          <span className="chip">Project run launcher</span>
+          <span className="chip">Exports + jobs</span>
+          <span className="chip">Knowledge retrieval</span>
         </div>
         <div className="cta-row">
-          <Link className="button primary" href="/workspaces">
-            Open dashboard
+          <Link className="button primary" href="/register">
+            Create account
           </Link>
           <Link className="button secondary" href="/login">
-            Try auth flow
+            Login
           </Link>
         </div>
       </section>
 
-      <section className="panel stack">
-        <div className="eyebrow">API Surface</div>
-        <h2 style={{ marginBottom: 0 }}>Built around the new product backend</h2>
-        <ul className="list muted">
-          <li>`/auth/*` for registration, login, and current-user identity</li>
-          <li>`/workspaces` and `/projects` for collaboration structure</li>
-          <li>`/projects/:projectId/runs` for the unified `copilot_v2` graph</li>
-          <li>`/reports/:reportId` for cited reports and source viewers</li>
-          <li>`/learning-sessions/:sessionId` and `/checkpoints/:id/submit` for learning continuity</li>
-        </ul>
-      </section>
-
-      <section className="panel">
-        <div className="eyebrow">Experience Map</div>
-        <div className="grid cols-3">
-          <div className="card">
-            <h3>1. Create or join a workspace</h3>
-            <p className="muted">
-              Organize research by team, project, and shared run history instead of
-              isolated notebook sessions.
-            </p>
-          </div>
-          <div className="card">
-            <h3>2. Run the copilot</h3>
-            <p className="muted">
-              Choose `research`, `learn`, or `research_then_learn` and persist the
-              output as product objects, not loose markdown files.
-            </p>
-          </div>
-          <div className="card">
-            <h3>3. Grow mastery over time</h3>
-            <p className="muted">
-              Track checkpoints, scores, remediation loops, and topic-level
-              confidence across sessions.
-            </p>
-          </div>
-        </div>
-      </section>
+      <div className="grid cols-3">
+        <section className="panel stack">
+          <div className="eyebrow">1. Organize</div>
+          <h3>Workspaces and projects</h3>
+          <p className="muted">
+            Create team workspaces, add projects, invite collaborators, and keep
+            reports, comments, and knowledge assets tied to the right context.
+          </p>
+        </section>
+        <section className="panel stack">
+          <div className="eyebrow">2. Run</div>
+          <h3>Copilot execution</h3>
+          <p className="muted">
+            Launch `research`, `learn`, or `research_then_learn`, then jump
+            directly into the resulting report or learning session.
+          </p>
+        </section>
+        <section className="panel stack">
+          <div className="eyebrow">3. Improve</div>
+          <h3>Mastery and exports</h3>
+          <p className="muted">
+            Review checkpoints, source quality, workspace analytics, and export
+            artifacts without leaving the product UI.
+          </p>
+        </section>
+      </div>
     </div>
   );
 }

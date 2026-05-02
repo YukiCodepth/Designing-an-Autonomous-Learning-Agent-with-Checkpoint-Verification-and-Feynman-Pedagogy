@@ -1,113 +1,150 @@
-import { apiFetch, demoToken } from "../../../lib/api";
+"use client";
 
-type Analytics = {
-  workspace_id: string;
-  total_projects: number;
-  total_runs: number;
-  total_reports: number;
-  total_learning_sessions: number;
-  total_comments: number;
-  total_knowledge_documents: number;
-  total_jobs: number;
-  checkpoint_pass_rate: number;
-  mastery_by_topic: { topic: string; confidence: number; mastered: boolean }[];
-  run_volume_by_project: { project_name: string; run_count: number }[];
-  report_status_breakdown: { status: string; count: number }[];
-  source_quality: { title: string; confidence: number; url: string }[];
-  activity_counts: Record<string, number>;
-};
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-async function getAnalytics(workspaceId: string): Promise<Analytics | null> {
-  if (!demoToken) {
-    return null;
+import { useAuth } from "../../../components/auth-provider";
+import { ProtectedRoute } from "../../../components/protected-route";
+import { apiFetch, formatApiError } from "../../../lib/api";
+import type { Analytics } from "../../../lib/types";
+
+function AnalyticsPageContent() {
+  const { token } = useAuth();
+  const params = useParams<{ workspaceId: string }>();
+  const workspaceId = params.workspaceId;
+
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadAnalytics() {
+      if (!token) {
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await apiFetch<Analytics>(`/analytics/workspaces/${workspaceId}`, {
+          token,
+        });
+        setAnalytics(response);
+      } catch (loadError) {
+        setError(formatApiError(loadError));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void loadAnalytics();
+  }, [token, workspaceId]);
+
+  if (loading) {
+    return <div className="panel empty">Loading analytics...</div>;
   }
-  try {
-    return await apiFetch<Analytics>(`/analytics/workspaces/${workspaceId}`, {
-      token: demoToken,
-    });
-  } catch {
-    return null;
-  }
-}
 
-export default async function AnalyticsPage({
-  params,
-}: {
-  params: Promise<{ workspaceId: string }>;
-}) {
-  const { workspaceId } = await params;
-  const analytics = await getAnalytics(workspaceId);
-
-  if (!analytics) {
-    return (
-      <div className="panel empty">
-        Analytics data is unavailable. Set `NEXT_PUBLIC_DEMO_TOKEN` after auth to
-        view workspace metrics here.
-      </div>
-    );
+  if (error || !analytics) {
+    return <div className="notice error">{error || "Analytics data is unavailable."}</div>;
   }
 
   return (
-    <div className="grid cols-2">
+    <div className="page-stack">
       <section className="panel stack">
-        <div className="eyebrow">Analytics</div>
-        <h2>Workspace overview</h2>
-        <div className="grid cols-3">
-          <div className="card"><strong>{analytics.total_projects}</strong><div className="muted">Projects</div></div>
-          <div className="card"><strong>{analytics.total_runs}</strong><div className="muted">Runs</div></div>
-          <div className="card"><strong>{analytics.total_reports}</strong><div className="muted">Reports</div></div>
-          <div className="card"><strong>{analytics.total_learning_sessions}</strong><div className="muted">Learning sessions</div></div>
-          <div className="card"><strong>{analytics.total_knowledge_documents}</strong><div className="muted">Knowledge docs</div></div>
-          <div className="card"><strong>{Math.round(analytics.checkpoint_pass_rate * 100)}%</strong><div className="muted">Checkpoint pass rate</div></div>
+        <div className="section-heading">
+          <div>
+            <div className="eyebrow">Analytics</div>
+            <h2>Workspace overview</h2>
+            <p className="muted">
+              Track project activity, run volume, mastery trends, source quality,
+              and operational load across the workspace.
+            </p>
+          </div>
+          <Link className="button secondary" href={`/workspaces/${workspaceId}`}>
+            Back to workspace
+          </Link>
         </div>
-        <div className="card">
-          <h3>Activity counts</h3>
-          <div className="meta">
-            {Object.entries(analytics.activity_counts).map(([key, value]) => (
-              <span key={key}>{key}: {value}</span>
+      </section>
+
+      <div className="grid cols-3">
+        <div className="card metric-card"><strong>{analytics.total_projects}</strong><span>Projects</span></div>
+        <div className="card metric-card"><strong>{analytics.total_runs}</strong><span>Runs</span></div>
+        <div className="card metric-card"><strong>{analytics.total_reports}</strong><span>Reports</span></div>
+        <div className="card metric-card"><strong>{analytics.total_learning_sessions}</strong><span>Learning sessions</span></div>
+        <div className="card metric-card"><strong>{analytics.total_jobs}</strong><span>Jobs</span></div>
+        <div className="card metric-card"><strong>{Math.round(analytics.checkpoint_pass_rate * 100)}%</strong><span>Checkpoint pass rate</span></div>
+      </div>
+
+      <div className="layout-2">
+        <section className="panel stack">
+          <div className="eyebrow">Run volume by project</div>
+          <div className="card-list">
+            {analytics.run_volume_by_project.map((item) => (
+              <div className="card" key={item.project_name}>
+                <strong>{item.project_name}</strong>
+                <div className="meta">
+                  <span>{item.run_count} runs</span>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="panel stack">
-        <div className="eyebrow">Project load</div>
-        <div className="card-list">
-          {analytics.run_volume_by_project.map((item) => (
-            <div className="card" key={item.project_name}>
-              <h3>{item.project_name}</h3>
-              <p className="muted">{item.run_count} runs</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="panel stack">
-        <div className="eyebrow">Mastery</div>
-        <div className="card-list">
-          {analytics.mastery_by_topic.map((topic) => (
-            <div className="card" key={topic.topic}>
-              <h3>{topic.topic}</h3>
-              <div className="meta">
-                <span>Confidence {Math.round(topic.confidence * 100)}%</span>
-                <span>{topic.mastered ? "Mastered" : "Needs review"}</span>
+        <section className="panel stack">
+          <div className="eyebrow">Mastery by topic</div>
+          <div className="card-list">
+            {analytics.mastery_by_topic.map((topic) => (
+              <div className="card" key={topic.topic}>
+                <strong>{topic.topic}</strong>
+                <div className="meta">
+                  <span>Confidence {Math.round(topic.confidence * 100)}%</span>
+                  <span>{topic.mastered ? "Mastered" : "Needs review"}</span>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      </div>
 
-      <section className="panel stack">
-        <div className="eyebrow">Source quality</div>
-        <div className="card-list">
-          {analytics.source_quality.map((source) => (
-            <a className="card" href={source.url} key={source.url} target="_blank" rel="noreferrer">
-              <h3>{source.title}</h3>
-              <p className="muted">Confidence {source.confidence}</p>
-            </a>
-          ))}
-        </div>
-      </section>
+      <div className="layout-2">
+        <section className="panel stack">
+          <div className="eyebrow">Source quality</div>
+          <div className="card-list">
+            {analytics.source_quality.map((source) => (
+              <a className="card interactive-card" href={source.url} key={source.url} rel="noreferrer" target="_blank">
+                <strong>{source.title}</strong>
+                <div className="meta">
+                  <span>Confidence {source.confidence}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="panel stack">
+          <div className="eyebrow">Activity counts</div>
+          <div className="card-list">
+            {Object.entries(analytics.activity_counts).map(([key, value]) => (
+              <div className="card" key={key}>
+                <strong>{key}</strong>
+                <div className="meta">
+                  <span>{value}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
+  );
+}
+
+export default function AnalyticsPage() {
+  return (
+    <ProtectedRoute>
+      <AnalyticsPageContent />
+    </ProtectedRoute>
   );
 }

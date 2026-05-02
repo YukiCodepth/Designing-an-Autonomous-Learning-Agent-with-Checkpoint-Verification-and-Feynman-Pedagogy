@@ -8,12 +8,13 @@ import { useAuth } from "../../components/auth-provider";
 import { apiFetch, formatApiError } from "../../lib/api";
 import type { TokenResponse } from "../../lib/types";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const { user, loading, loginWithTokenResponse } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/workspaces";
 
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -31,10 +32,11 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const response = await apiFetch<TokenResponse>("/auth/login", {
+      const response = await apiFetch<TokenResponse>("/auth/register", {
         method: "POST",
         body: {
           email,
+          full_name: fullName,
           password,
         },
       });
@@ -50,14 +52,25 @@ export default function LoginPage() {
   return (
     <div className="auth-wrap">
       <section className="panel stack auth-panel">
-        <div className="eyebrow">Login</div>
-        <h2>Welcome back</h2>
+        <div className="eyebrow">Register</div>
+        <h2>Create your workspace account</h2>
         <p className="muted">
-          Sign in to open your workspaces, launch runs, and manage reports and
-          learning sessions from the app.
+          Registration creates your user and personal workspace so you can start
+          building projects immediately.
         </p>
 
         <form className="form-stack" onSubmit={handleSubmit}>
+          <label className="field">
+            <span>Full name</span>
+            <input
+              autoComplete="name"
+              onChange={(event) => setFullName(event.target.value)}
+              placeholder="Aman Sharma"
+              required
+              value={fullName}
+            />
+          </label>
+
           <label className="field">
             <span>Email</span>
             <input
@@ -73,9 +86,10 @@ export default function LoginPage() {
           <label className="field">
             <span>Password</span>
             <input
-              autoComplete="current-password"
+              autoComplete="new-password"
+              minLength={8}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Enter your password"
+              placeholder="At least 8 characters"
               required
               type="password"
               value={password}
@@ -85,12 +99,12 @@ export default function LoginPage() {
           {error ? <div className="notice error">{error}</div> : null}
 
           <button className="button primary" disabled={submitting} type="submit">
-            {submitting ? "Signing in..." : "Login"}
+            {submitting ? "Creating account..." : "Register"}
           </button>
         </form>
 
         <div className="muted">
-          New here? <Link href={`/register?next=${encodeURIComponent(next)}`}>Create an account</Link>
+          Already have an account? <Link href={`/login?next=${encodeURIComponent(next)}`}>Login</Link>
         </div>
       </section>
     </div>
