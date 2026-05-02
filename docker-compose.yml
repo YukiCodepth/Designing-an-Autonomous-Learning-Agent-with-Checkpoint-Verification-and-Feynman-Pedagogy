@@ -105,11 +105,7 @@ services:
       - product_uploads:/app/uploads
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "ps -ef | grep 'deep_research_from_scratch.product.worker' | grep -v grep >/dev/null"]
-      interval: 20s
-      timeout: 10s
-      retries: 6
-      start_period: 30s
+      disable: true
 
   web:
     build:
